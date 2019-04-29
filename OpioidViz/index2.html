@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style>
+      path {
+        stroke: #fff;
+        stroke-width: 1px;
+      }
+      path:hover {
+        fill: #ccc;
+      }
+      body {
+        text-align: center;
+      }
+      div.tooltip { 
+          position: absolute;     
+          text-align: left;     
+          width: 120px;          
+          height: 80px;         
+          padding: 5px;       
+          font: 12px sans-serif;    
+          background: #fff;
+          border: 1.5px solid gray;        
+          pointer-events: none;     
+      }
+    </style>
+  </head>
+  <body>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/topojson.v1.min.js"></script>
+    <script>
+    var width = 600,
+        height = 500;
+
+    var projection = d3.geo.mercator()
+        .scale(1)
+        .translate([0, 0]);
+
+    var path = d3.geo.path()
+        .projection(projection);
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var url = "WACounty.json";
+
+    var tooltip = d3.select("body").append("div") 
+        .attr("class", "tooltip")       
+        .style("opacity", 0);
+
+    /*d3.csv("data_13_17.csv").then(function(data) {
+        data.forEach(function(d) {
+        d.County = +d.County;
+        d.Count = +d.Count;
+        });
+        console.log(data[0]);
+    });*/
+
+    d3.json(url, function(error, topology) {
+      if (error) throw error;
+
+      var geojson = topojson.feature(topology, topology.objects.WACounty);
+
+      var b = path.bounds(geojson),
+          s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+          t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+      projection
+          .scale(s)
+          .translate(t);
+
+      svg.selectAll("path")
+          .data(geojson.features)
+          .enter().append("path")
+          .attr("d", path)
+          .attr ("fill", "green")
+          .on("mouseover", function(d) {    
+            tooltip.transition()    
+            .duration(200)    
+            .style("opacity", .9);    
+            tooltip.html("<b><u>" + d.properties.NAME + " County, WA </b></u><br></br><b> Fatality Count: <br></b>" + d.properties.NAME)  
+            .style("left", (d3.event.pageX) + "px")   
+            .style("top", (d3.event.pageY + 28) + "px");  
+          })          
+          .on("mouseout", function(d) {   
+            tooltip.transition()    
+            .duration(500)    
+            .style("opacity", 0); 
+          });
+
+    });
+    </script>
+  </body>
+</html>

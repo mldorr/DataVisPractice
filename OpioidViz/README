@@ -1,0 +1,17 @@
+README
+
+###Creating TopoJSON File.
+
+- Obtained ShapeFile from the Census website for United States.
+- Used QGIS to extract counties only in Washington State.
+- Used MapShapper to convert ShapeFile of Washington State to TopoJSON.
+
+###Opiod Data.
+- Used WA DOH data for opiod drug overdoses (Used 5 year interval 2013-17) https://fortress.wa.gov/doh/wtn/WTNPortal/home/#!q0=1429 
+- Plotted map of WA counties where color encodes the count of deaths. Range from 0 to 197. 
+
+###Interaction. (Changing year range)
+#TODO
+
+
+**Use `python3 -m http.server` to start a simple server to run the html page. 
